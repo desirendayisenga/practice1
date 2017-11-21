@@ -1,3 +1,120 @@
+<?php
+$con=pg_connect("host='localhost' dbname='db_desire' user='desire' password='12345'") or die(" not con");
+
+
+//include ("include.php");
+
+if(isset($_POST['login']))
+{
+
+$user= pg_escape_string($con, $_POST['username']);
+$pass= pg_escape_string($con, $_POST['password']);
+$hashed_pass=hash('sha512',$pass);
+
+
+
+
+ 
+ $query = pg_query($con,"SELECT * FROM users WHERE username='$user'");
+ $row=pg_fetch_array( $query);
+
+
+
+  if($hashed_pass == $row['pass'])
+ {
+ 
+  
+  header("Location:succes.php");
+      
+}
+ 
+ 
+ else
+ {
+  echo "Incorrect password or username";	
+   
+
+}
+ 
+ pg_close($con);
+ 
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+if(isset($_POST["signup"]))
+{
+      
+
+ 
+
+
+$name= pg_escape_string($con, $_POST['name']);
+$user= pg_escape_string($con, $_POST['uname']);
+$pass= pg_escape_string($con, $_POST['pass']);
+$hashed_pass=hash('sha512',$pass);
+
+
+       $check_email =pg_query($con,"SELECT * FROM users WHERE username='$user'");
+
+
+
+
+
+
+
+
+
+
+
+ $count=pg_num_rows($check_email);
+ 
+ if($count==0){ 
+
+
+          $query = "INSERT INTO users(name,username,pass) VALUES('$name','$user','$hashed_pass')";
+
+                     
+ $result =pg_query($con,$query);
+				
+
+          
+
+			
+			
+                if($result)
+				 {echo"successfully registered ";}
+
+				  else{echo"not registered";}
+
+
+        }
+             
+
+		else{
+ echo"the username you entered exist in the sysyem ";
+    
+            } 
+
+}
+
+
+
+pg_close($con);
+?>
+
+
+
 
 <hml>
 <head>
@@ -11,7 +128,7 @@
   
 
  
-      <form action="reg.php" method="post" >
+      <form action="index.php" method="post" >
 <div class="input-g">
        <label>Name:
  <input type="text"  placeholder="your name" name="name" required  />
@@ -20,7 +137,7 @@
 
 <div class="input-g">
 <label>Username:
-        <input type="email"  placeholder="Email address" name="uname" required  /><br><br>
+        <input type="text"  placeholder="Email address" name="uname" required  /><br><br>
 </label>
 </div>
 
@@ -42,15 +159,15 @@
 <h3 class="white">log in</h3>
 </div>
 				     
-				<form action="reg.php" method="post">
+				<form action="index.php" method="post">
 				<div class="input-g">
        <label>Username:
-					<input type="email" placeholder="Email address" name="emails" required><br><br>
+					<input type="text" placeholder="Email address" name="username" required><br><br>
 </label>
 </div>
 <div class="input-g">
        <label>Password:
-					<input type="password"  placeholder="Password" name="passs" required>
+					<input type="password"  placeholder="Password" name="password" required>
 </label>
 </div>
 			<div class="input-g">
@@ -62,91 +179,7 @@
 
 
 
-<?php
 
-include ("include.php");
-
-if(isset($_POST['login']))
-{
- $emails = $MySQLi_CON->real_escape_string(trim($_POST['uname']));
- $passs = $MySQLi_CON->real_escape_string(trim($_POST['pass']));
- 
- $query = $MySQLi_CON->query("SELECT * FROM reguser WHERE uname='$emails'");
- $row=$query->fetch_array();
-
-
-
-  if($passs == $row['pass'])
- {
- 
-  
-  header("Location:succes.php");
-      
-}
- 
- 
- else
- {
-  echo "Incorrect password or username";	
-   
-
-}
- 
- $MySQLi_CON->close();
- 
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-if(isset($_POST["signup"]))
-{
-      $hashed_pass=hash('sha512',$_POST['pass']);
-
-   $name=$_POST["name"];
-   $uname=$_POST["uname"];
-   $password=$_POST["pass"];
-   
-
-       $check_email = $MySQLi_CON->query("SELECT uname FROM reguser WHERE uname='$uname'");
- $count=$check_email->num_rows;
- 
- if($count==0){
-
-
-          $query = "INSERT INTO reguser(name,uname,pass)VALUES('$name','$uname','$hashed_pass')";
-
-                     
- $result = mysqli_query($MySQLi_CON,$query);
-				mysqli_close($MySQLi_CON);
-
-          
-
-			
-			
-                if($result)
-				 {echo"successfully registered ";}
-
-				  else{echo"error";}
-        
-             }
-
-		else{
- echo"the email you entered exist in the sysyem ";
-    
-            }
-
-}
-?>
 
 
 
